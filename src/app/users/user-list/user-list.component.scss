@@ -1,20 +1,32 @@
 .loading-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Make sure it stays on top */
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  .container {
-    position: relative;
-    min-height: 200px; /* Adjust as needed */
-  }
-  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* Make sure it stays on top */
+}
+
+.container {
+  position: relative;
+  min-height: 200px;
+  /* Adjust as needed */
+}
+
+/* user-list.component.css */
+.search-bar {
+  margin: 20px 0;
+  width: 100%;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+/* Ensure form field isn't hidden */
+.hidden {
+  display: none; /* This should only apply to the table container */
+}
