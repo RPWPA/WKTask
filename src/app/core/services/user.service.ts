@@ -21,6 +21,6 @@ export class UserService {
   }
 
   deleteUser(id: number) {
-    return this.http.delete(`${apiUrl}/users/delete/${id}`);
+    return this.http.delete(`${apiUrl}/users/delete`, {body: {'id': id}});
   }
 }

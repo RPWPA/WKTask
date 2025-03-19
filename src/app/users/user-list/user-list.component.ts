@@ -17,6 +17,7 @@ import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/fo
 import { MatInputModule } from '@angular/material/input';
 import { UserFormComponent } from '../../shared/user-form/user-form.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-user-list',
@@ -45,7 +46,7 @@ export class UserListComponent implements AfterViewInit, OnInit {
   private dialog = inject(MatDialog);
 
 
-  
+
   displayedColumns = ['id', 'fname', 'lname', 'actions'];
   dataSource = new MatTableDataSource<User>([]);
 
@@ -62,9 +63,9 @@ export class UserListComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+
     this.dataSource.sortingDataAccessor = (item, property) => {
-      switch(property) {
+      switch (property) {
         case 'fname': return item.fname.toLowerCase();
         case 'lname': return item.lname.toLowerCase();
         default: return item[property as keyof User];
@@ -115,24 +116,53 @@ export class UserListComponent implements AfterViewInit, OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-    if (result) {
+      if (result) {
         this.createUser(result);
       }
     });
   }
 
-// user-list.component.ts
-private createUser(userData: Omit<User, 'id'>) {
-  this.loading = true;
-  this.userService.createUser(userData).subscribe({
-    next: (newUser) => {
-      this.dataSource.data = [...this.dataSource.data, newUser];
-    },
-    error: (err) => {
-      console.error('Create failed:', err);
-      this.loading = false;
-    },
-    complete: () => this.loading = false
-  });
-}
+  // user-list.component.ts
+  private createUser(userData: Omit<User, 'id'>) {
+    this.loading = true;
+    this.userService.createUser(userData).subscribe({
+      next: (newUser) => {
+        this.dataSource.data = [...this.dataSource.data, newUser];
+      },
+      error: (err) => {
+        console.error('Create failed:', err);
+        this.loading = false;
+      },
+      complete: () => this.loading = false
+    });
+  }
+  
+  // Add to existing code
+  deleteUser(user: User): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: { userName: `${user.fname} ${user.lname}` }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.performDelete(user.id);
+      }
+    });
+  }
+
+  private performDelete(userId: number): void {
+    this.loading = true;
+    this.userService.deleteUser(userId).subscribe({
+      next: () => {
+        this.dataSource.data = this.dataSource.data.filter(u => u.id !== userId);
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+        alert('Failed to delete user. Please try again.');
+        this.loading = false;
+      },
+      complete: () => this.loading = false
+    });
+  }
+
 }
