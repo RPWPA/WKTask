@@ -45,8 +45,6 @@ export class UserListComponent implements AfterViewInit, OnInit {
 
   private dialog = inject(MatDialog);
 
-
-
   displayedColumns = ['id', 'fname', 'lname', 'actions'];
   dataSource = new MatTableDataSource<User>([]);
 
@@ -159,6 +157,39 @@ export class UserListComponent implements AfterViewInit, OnInit {
       error: (err) => {
         console.error('Delete failed:', err);
         alert('Failed to delete user. Please try again.');
+        this.loading = false;
+      },
+      complete: () => this.loading = false
+    });
+  }
+
+  openUserForm(user?: User): void {
+    const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '500px',
+      data: { user }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (user) {
+          this.updateUser(user.id, result);
+        } else {
+          this.createUser(result);
+        }
+      }
+    });
+  }
+
+  private updateUser(userId: number, userData: User): void {
+    this.loading = true;
+    this.userService.updateUser(userId, userData).subscribe({
+      next: (updatedUser) => {
+        this.dataSource.data = this.dataSource.data.map(user => 
+          user.id === userId ? { ...user, ...updatedUser } : user
+        );
+      },
+      error: (err) => {
+        console.error('Update failed:', err);
         this.loading = false;
       },
       complete: () => this.loading = false

@@ -39,6 +39,7 @@ export class UserFormComponent {
     @Inject(MAT_DIALOG_DATA) public data: { user?: User }
   ) {
     this.userForm = this.fb.group({
+      id: [{ value: '', disabled: true }],  // Add ID control
       fname: ['', Validators.required],
       lname: ['', Validators.required],
       username: ['', Validators.required],
@@ -46,13 +47,15 @@ export class UserFormComponent {
       avatar: ['']
     });
     if (this.data?.user) {
-      this.userForm.patchValue(this.data.user);
+      // Deep copy to prevent form changes from affecting original data
+      const userCopy = JSON.parse(JSON.stringify(this.data.user));
+      this.userForm.patchValue(userCopy);
     }
   }
 
   onSubmit(): void {
     if (this.userForm.valid) {
-      const formData = this.userForm.value as Omit<User, 'id'>;
+      const formData = this.userForm.getRawValue(); // Include disabled fields
       this.dialogRef.close(formData);
     }
   }

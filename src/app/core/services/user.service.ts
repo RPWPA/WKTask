@@ -17,7 +17,7 @@ export class UserService {
   }
 
   updateUser(id: number, user: User) {
-    return this.http.put<User>(`${apiUrl}/users/update/${id}`, user);
+    return this.http.put<User>(`${apiUrl}/users/update/`, user);
   }
 
   deleteUser(id: number) {
