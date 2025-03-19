@@ -183,9 +183,9 @@ export class UserListComponent implements AfterViewInit, OnInit {
   private updateUser(userId: number, userData: User): void {
     this.loading = true;
     this.userService.updateUser(userId, userData).subscribe({
-      next: (updatedUser) => {
+      next: (updatedUser: any) => {
         this.dataSource.data = this.dataSource.data.map(user => 
-          user.id === userId ? { ...user, ...updatedUser } : user
+          user.id === userId ? { ...user, ...(updatedUser.user) } : user
         );
       },
       error: (err) => {
