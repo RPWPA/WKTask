@@ -124,8 +124,8 @@ export class UserListComponent implements AfterViewInit, OnInit {
   private createUser(userData: Omit<User, 'id'>) {
     this.loading = true;
     this.userService.createUser(userData).subscribe({
-      next: (newUser) => {
-        this.dataSource.data = [...this.dataSource.data, newUser];
+      next: (newUser: any) => {
+        this.dataSource.data = [...this.dataSource.data, ...(newUser.user)];
       },
       error: (err) => {
         console.error('Create failed:', err);
