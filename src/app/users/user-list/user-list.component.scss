@@ -30,3 +30,17 @@
 .hidden {
   display: none; /* This should only apply to the table container */
 }
+
+/* Add button styling */
+.add-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+/* Optional hover effect */
+.mat-fab:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}

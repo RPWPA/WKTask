@@ -15,7 +15,6 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatButtonModule,  // For navigation buttons
     MatIconModule,    // For icons (e.g., logout)
     MatPaginatorModule,
-    MatProgressSpinner
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

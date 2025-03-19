@@ -5,9 +5,7 @@
 
   <mat-form-field appearance="outline" class="search-bar">
     <mat-label>Search Users</mat-label>
-    <input matInput 
-           placeholder="Start typing..."
-           (input)="applyFilter($event)">
+    <input matInput placeholder="Start typing..." (input)="applyFilter($event)">
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
@@ -41,5 +39,8 @@
     </table>
 
     <mat-paginator [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
+    <button mat-fab color="primary" class="add-button" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
   </div>
 </div>

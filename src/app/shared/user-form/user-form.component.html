@@ -1,0 +1,34 @@
+
+<h2 mat-dialog-title>{{ data.user ? 'Edit User' : 'Add User' }}</h2>
+<div mat-dialog-content>
+  <form [formGroup]="userForm">
+    <mat-form-field>
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="fname" required>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lname" required>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>avatar</mat-label>
+      <input matInput formControlName="avatar" required>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onSubmit()" [disabled]="userForm.invalid">
+    {{ data.user ? 'Update' : 'Create' }}
+  </button>
+</div>

@@ -15,6 +15,8 @@ import { Subject } from 'rxjs';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { UserFormComponent } from '../../shared/user-form/user-form.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-user-list',
@@ -30,7 +32,7 @@ import { MatInputModule } from '@angular/material/input';
     MatFormField,
     MatInputModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.scss']
@@ -39,6 +41,9 @@ export class UserListComponent implements AfterViewInit, OnInit {
   private userService = inject(UserService);
   private filterSubject = new Subject<string>();
   filter$ = this.filterSubject.asObservable();
+
+  private dialog = inject(MatDialog);
+
 
   
   displayedColumns = ['id', 'fname', 'lname', 'actions'];
@@ -101,4 +106,33 @@ export class UserListComponent implements AfterViewInit, OnInit {
         error: (err) => console.error(err)
       });
   }
+
+  // Add this method
+  openAddDialog(): void {
+    const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '500px',
+      data: { user: null } // Pass null for new user
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+        this.createUser(result);
+      }
+    });
+  }
+
+// user-list.component.ts
+private createUser(userData: Omit<User, 'id'>) {
+  this.loading = true;
+  this.userService.createUser(userData).subscribe({
+    next: (newUser) => {
+      this.dataSource.data = [...this.dataSource.data, newUser];
+    },
+    error: (err) => {
+      console.error('Create failed:', err);
+      this.loading = false;
+    },
+    complete: () => this.loading = false
+  });
+}
 }
