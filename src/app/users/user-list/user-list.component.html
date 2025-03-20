@@ -50,6 +50,7 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
 </table>
 
 <mat-paginator [length]="totalItems"
@@ -59,3 +60,6 @@
                showFirstLastButtons
                (page)="pageIndex = $event.pageIndex; pageSize = $event.pageSize">
 </mat-paginator>
+<button mat-fab color="primary" class="add-button" (click)="openAddDialog()">
+  <mat-icon>add</mat-icon>
+</button>
