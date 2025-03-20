@@ -11,14 +11,13 @@ Only the 1st and 3rd one were completed which you can find screenshots of here.
 
 ![image](https://github.com/user-attachments/assets/60728f74-b017-429e-bd3d-67d3d89d2791)
 
-# Important notice
-
-I haven't used Angular in quite a while so most of this project and its structuring was done using AI and going back and forth with it. It also took like 7-8 hours so there is that as well.
-
 # How to run
 
 To run this project, clone the repo. Go into the folder and run "npm i". When that is done, run 'ng serve' and this should be enough for you to test it.
 
+# Important notice
+
+I haven't used Angular in quite a while so most of this project and its structuring was done using AI and going back and forth with it. It also took like 7-8 hours so there is that as well.
 
 # Credits:
 
