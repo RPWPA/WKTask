@@ -5,7 +5,7 @@
         <mat-card-subtitle>
           <mat-form-field appearance="outline">
             <mat-label>Start Date</mat-label>
-            <input matInput [matDatepicker]="picker" 
+            <input matNativeControl matInput [matDatepicker]="picker" 
                    [value]="selectedDate"
                    (dateChange)="onDateChange($event)">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -42,6 +42,7 @@
       </mat-card-header>
       
       <mat-card-content>
+        
         <div *ngIf="dailyLoading" class="loading-overlay">
           <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
         </div>

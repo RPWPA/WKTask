@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './core/header/header.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, MatFormFieldModule],
   template: `
     <app-header></app-header>
     <main class="content">
@@ -22,4 +23,4 @@ import { HeaderComponent } from './core/header/header.component';
     }
   `]
 })
-export class AppComponent {}
+export class AppComponent { }

@@ -25,7 +25,7 @@ import { MatIcon } from '@angular/material/icon';
     MatIcon,
     MatFormField,
     MatSnackBarModule,
-    NgxApexchartsModule
+    NgxApexchartsModule,
   ],
   templateUrl: './pet-sales.component.html',
   styleUrls: ['./pet-sales.component.scss'],
@@ -69,10 +69,12 @@ export class PetSalesComponent implements OnInit {
     this.dailyLoading = true;
     this.petSalesService.getDailySales(date).subscribe({
       next: (response) => {
+        console.log('Daily Sales Response:', response); // Add for debugging
         this.dailySales = response;
         this.dailyLoading = false;
       },
       error: (err) => {
+        console.error('Daily Sales Error:', err); // Add for debugging
         this.showError('Failed to load daily data');
         this.dailyLoading = false;
       }
@@ -86,12 +88,12 @@ export class PetSalesComponent implements OnInit {
         type: 'line',
         height: 400,
         events: {
-          dataPointSelection: (event: any, chartContext: any, { dataPointIndex }: any) => {
-            const selectedDate = data.categories[dataPointIndex];
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            const selectedDate = data.categories[config.dataPointIndex];
             this.loadDailySales(selectedDate);
           }
         }
-      },
+      },  
       xaxis: {
         categories: data.categories.map((date: string) => 
           this.datePipe.transform(date, 'MMM dd') || date
