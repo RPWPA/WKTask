@@ -48,7 +48,7 @@ export class UserListComponent implements AfterViewInit, OnInit {
   loading = false;
   private searchSubject = new Subject<string>();
   
-  displayedColumns = ['id', 'fname', 'lname', 'username', 'avatar', 'actions'];
+  displayedColumns = ['id', 'fname', 'lname', 'username', 'actions'];
   dataSource = new MatTableDataSource<User>([]);
   
   // Pagination
