@@ -1,24 +1,25 @@
+// app.component.ts
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-  
+import { HeaderComponent } from './core/header/header.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    MatToolbarModule, // Required for Angular Material toolbar
-    MatButtonModule,  // For navigation buttons
-    MatIconModule,    // For icons (e.g., logout)
-    MatPaginatorModule,
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
+  template: `
+    <app-header></app-header>
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  `,
+  styles: [`
+    .content {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  `]
 })
-export class AppComponent {
-  title = 'WKTask';
-}
+export class AppComponent {}
