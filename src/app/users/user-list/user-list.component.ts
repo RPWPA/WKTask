@@ -29,7 +29,6 @@ import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/co
     MatSortModule,
     MatProgressSpinner,
     MatIcon,
-    MatLabel,
     MatFormField,
     MatInputModule,
     MatFormFieldModule,
@@ -40,70 +39,84 @@ import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/co
 })
 export class UserListComponent implements AfterViewInit, OnInit {
   private userService = inject(UserService);
-  private filterSubject = new Subject<string>();
-  filter$ = this.filterSubject.asObservable();
-
   private dialog = inject(MatDialog);
 
-  displayedColumns = ['id', 'fname', 'lname', 'actions'];
-  dataSource = new MatTableDataSource<User>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   loading = false;
+  private searchSubject = new Subject<string>();
+  
+  displayedColumns = ['id', 'fname', 'lname', 'username', 'avatar', 'actions'];
+  dataSource = new MatTableDataSource<User>([]);
+  
+  // Pagination
+  pageSize = 10;
+  pageIndex = 0;
+  totalItems = 0;
+  searchTerm = '';
 
   ngOnInit() {
-    this.loadUsers();
-    this.setupFilter();
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(() => this.loadUsers());
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // Initialize sort with default values
+    this.sort.active = 'id';
+    this.sort.direction = 'asc';
+    
+    // Set initial parameters
+    this.pageSize = 10;
+    this.pageIndex = 0;
 
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'fname': return item.fname.toLowerCase();
-        case 'lname': return item.lname.toLowerCase();
-        default: return item[property as keyof User];
-      }
-    };
+    // Initial data load
+    this.loadUsers();
 
-    this.dataSource.filterPredicate = (data: User, filter: string) => {
-      const searchString = filter.toLowerCase();
-      return (
-        data.fname.toLowerCase().includes(searchString) ||
-        data.lname.toLowerCase().includes(searchString) ||
-        data.username.toLowerCase().includes(searchString)
-      );
-    };
+    // Watch for sort changes
+    this.sort.sortChange.subscribe(() => {
+      this.paginator.pageIndex = 0;
+      this.loadUsers();
+    });
+
+    // Watch for pagination changes
+    this.paginator.page.subscribe(() => {
+      this.loadUsers();
+    });
   }
 
-  private setupFilter() {
-    this.filter$.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(filterValue => {
-      this.dataSource.filter = filterValue.trim().toLowerCase();
+  private loadUsers() {
+    this.loading = true;
+    
+    this.userService.getUsers({
+      search: this.searchTerm,
+      page: this.pageIndex + 1,
+      per_page: this.pageSize,
+      sort_column: this.sort.active || 'id',
+      sort_order: this.sort.direction || 'asc'
+    }).subscribe({
+      next: (response) => {
+        this.dataSource.data = response.data;
+        this.totalItems = response.total;
+        
+        // Force update of paginator
+        this.paginator.length = response.total;
+        this.paginator.pageIndex = this.pageIndex;
+        this.paginator.pageSize = this.pageSize;
+        this.loading = false;
+      },
+      error: (err) => console.error(err),
     });
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.filterSubject.next(filterValue);
-  }
-
-  private loadUsers() {
-    this.loading = true;
-    this.userService.getUsers()
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: (users) => {
-          this.dataSource.data = users;
-        },
-        error: (err) => console.error(err)
-      });
+    this.searchTerm = filterValue;
+    this.paginator.pageIndex = 0;
+    this.searchSubject.next(filterValue);
   }
 
   // Add this method
