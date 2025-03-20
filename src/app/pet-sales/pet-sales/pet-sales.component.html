@@ -37,12 +37,11 @@
       <mat-card-header>
         <mat-card-title>Daily Sales Details</mat-card-title>
         <mat-card-subtitle *ngIf="dailySales.length > 0">
-          Showing results for {{ dailySales[0]?.date || 'selected date' }}
+          Showing results for {{ dailySales[0]?.date ? (dailySales[0]?.date | date:'yyyy-MM-dd') : 'selected date' }}
         </mat-card-subtitle>
       </mat-card-header>
       
       <mat-card-content>
-        
         <div *ngIf="dailyLoading" class="loading-overlay">
           <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
         </div>
@@ -51,26 +50,31 @@
           <mat-icon>pets</mat-icon>
           <p>Click on a data point in the chart to view daily sales</p>
         </div>
-  
-        <table mat-table [dataSource]="dailySales" *ngIf="dailySales.length > 0 && !dailyLoading">
+      
+        <table mat-table [dataSource]="dataSource" *ngIf="dailySales.length > 0 && !dailyLoading">
+          <!-- Date Column -->
           <ng-container matColumnDef="date">
             <th mat-header-cell *matHeaderCellDef>Date</th>
-            <td mat-cell *matCellDef="let item">{{ item.date | date }}</td>
+            <td mat-cell *matCellDef="let item">
+              {{ item.date ? (item.date | date:'yyyy-MM-dd') : 'N/A' }}
+            </td>
           </ng-container>
-  
+          
+          <!-- Animal Column -->
           <ng-container matColumnDef="animal">
             <th mat-header-cell *matHeaderCellDef>Animal</th>
             <td mat-cell *matCellDef="let item">{{ item.animal }}</td>
           </ng-container>
-  
+          
+          <!-- Price Column -->
           <ng-container matColumnDef="price">
             <th mat-header-cell *matHeaderCellDef>Price</th>
             <td mat-cell *matCellDef="let item">{{ item.price | currency }}</td>
           </ng-container>
-  
+          
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </mat-card-content>
-    </mat-card>
+    </mat-card>    
   </div>

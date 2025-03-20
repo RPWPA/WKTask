@@ -4,12 +4,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxApexchartsModule } from 'ngx-apexcharts';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-pet-sales',
@@ -21,9 +23,9 @@ import { MatIcon } from '@angular/material/icon';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    MatLabel,
+    MatFormFieldModule, // Use this instead of MatFormField & MatLabel
+    MatInputModule,     // Needed for [matInput] on your input element
     MatIcon,
-    MatFormField,
     MatSnackBarModule,
     NgxApexchartsModule,
   ],
@@ -38,6 +40,8 @@ export class PetSalesComponent implements OnInit {
   loading = false;
   dailyLoading = false;
   displayedColumns = ['date', 'animal', 'price'];
+  dataSource = new MatTableDataSource();
+
 
   constructor(
     private petSalesService: PetSalesService,
@@ -47,14 +51,17 @@ export class PetSalesComponent implements OnInit {
 
   ngOnInit() {
     this.loadWeeklyData();
+    // this.loadDailySales()
   }
 
   loadWeeklyData(): void {
     this.loading = true;
     const formattedDate = this.datePipe.transform(this.selectedDate, 'yyyy-MM-dd') || '';
-    
+
     this.petSalesService.getWeeklySales(formattedDate).subscribe({
       next: (response) => {
+        console.clear()
+        console.log(response)
         this.updateChart(response);
         this.loading = false;
       },
@@ -69,33 +76,43 @@ export class PetSalesComponent implements OnInit {
     this.dailyLoading = true;
     this.petSalesService.getDailySales(date).subscribe({
       next: (response) => {
-        console.log('Daily Sales Response:', response); // Add for debugging
-        this.dailySales = response;
+        console.log('Daily Sales Response:', response);
+        this.dailySales = [...response];
+        this.dataSource.data = response;
         this.dailyLoading = false;
       },
       error: (err) => {
-        console.error('Daily Sales Error:', err); // Add for debugging
+        console.error('Daily Sales Error:', err);
         this.showError('Failed to load daily data');
         this.dailyLoading = false;
       }
     });
   }
 
+  //   private clickHandler = (e: any, chartContext: any, config: any) => {
+  //   const selectedDate = this.data.categories[config.dataPointIndex];
+  //   this.loadDailySales(selectedDate);
+  // }
+
   private updateChart(data: any): void {
+    // Log the incoming data to verify structure
+    console.log('Updating chart with data:', data);
+
     this.chartOptions = {
       series: data.series,
       chart: {
-        type: 'line',
-        height: 400,
         events: {
-          dataPointSelection: (event: any, chartContext: any, config: any) => {
-            const selectedDate = data.categories[config.dataPointIndex];
-            this.loadDailySales(selectedDate);
+          click: (event: any, chartContext: any, config: any) => {
+            if (config.dataPointIndex !== undefined) {
+              const selectedDate = data.categories[config.dataPointIndex];
+              console.log('Clicked Date:', selectedDate); // Debug
+              this.loadDailySales(selectedDate);
+            }
           }
         }
       },  
       xaxis: {
-        categories: data.categories.map((date: string) => 
+        categories: data.categories.map((date: string) =>
           this.datePipe.transform(date, 'MMM dd') || date
         ),
         title: { text: 'Date' }
@@ -107,11 +124,11 @@ export class PetSalesComponent implements OnInit {
         },
         min: 0
       },
-      stroke: { 
+      stroke: {
         width: 3,
         curve: 'smooth'
       },
-      markers: { size: 5 },
+      markers: { size: 8 },
       tooltip: {
         y: {
           formatter: (value: number) => value > 0 ? `$${value.toFixed(2)}` : 'No sales'
@@ -120,6 +137,7 @@ export class PetSalesComponent implements OnInit {
       dataLabels: { enabled: false }
     };
   }
+
 
   onDateChange(event: any): void {
     this.selectedDate = event.value;
